@@ -19,4 +19,16 @@ for tag in soup.find_all('h3'):
         headlines.append(title)
     return headlines
 
+def analyze_sentiment(text):
+    '''''
+    Using TextBlob to calculate the Sentiment Polarity
+    The Range is from -1 to +1 
+    '''''
+    blob = TextBlob(text)
+    return blob.sentiment.polarity
+
+app = Flask(__name__)
+
+@app.route('/analyze', methods = ["GET"])
+
 
