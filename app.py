@@ -30,5 +30,21 @@ def analyze_sentiment(text):
 app = Flask(__name__)
 
 @app.route('/analyze', methods = ["GET"])
+def analyze():
+    '''
+    Flask API route that takes a stock ticker, scrapes the news,
+    analyzes the sentiment, and returns a score
+    '''
+    ticket = requests.arg.get('ticker')
+    headlines = scrape_yahoo_news(ticker)
+    sentiments = [analyze_sentiment(h) for h in headlines]
+    average_sentiment = sum(sentiments) / len(sentiments) if sentiments else 0
+
+    return jsonify({
+        'ticker': ticker.upper(),
+        'average_sentiment': average_sentiment,
+        'headlines': headlines,
+        'individual_scores': sentiments
+    })
 
 
