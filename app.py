@@ -47,4 +47,28 @@ def analyze():
         'individual_scores': sentiments
     })
 
+def run_streamlit():
+    '''
+    Streamlit UI to allow user to enter ticker and view sentiment
+    '''
+    st.title("MarketMood: Stock Sentiment Analyzer")
+    ticker = st.text_input("Enter the stock ticker (e.g., NVDA): ")
 
+    if ticker:
+        with st.spinner("Analyzing the sentiment..."):
+            res = requests.get("http://127.0.0.1:5000/analyze", params = {'ticker': ticker})
+            data = res.json()
+
+            sentiment = data["average sentiment"]
+            color = "🟢 Bullish" if sentiment > 0.1 else "🔴 Bearish" if sentiment < -0.1 else "🟡 Neutral"
+
+            st.subheader(f"The Overall Sentiment for {data['ticker']}: {color}")
+            st.write(f"The Average Score: {round(sentiment, 2)}")
+
+            st.markdown("### Headlines: ")
+            for title, score in zip(data['headlines'], data['individual_scores']):
+                st.write(f"**{title}** - Sentiment: {round(score, 2)}")
+
+
+
+    
