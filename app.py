@@ -8,16 +8,15 @@ from flask import Flask, jsonify, request
 import streamlit as st
 
 def scrape_yahoo_news(ticker):
-    url = f"https://finance.yahoo.com/quote{ticker}?p={ticker}"
+    url = f"https://finance.yahoo.com/quote/{ticker}?p={ticker}"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-
-headlines = []
+    headlines = []
 for tag in soup.find_all('h3'):
     title = tag.get_text(strip = True)
     if title and ticker.upper() in title.upper():
         headlines.append(title)
-    return headlines
+return headlines
 
 def analyze_sentiment(text):
     '''''
@@ -35,7 +34,7 @@ def analyze():
     Flask API route that takes a stock ticker, scrapes the news,
     analyzes the sentiment, and returns a score
     '''
-    ticket = requests.arg.get('ticker')
+    ticket = requests.args.get('ticker')
     headlines = scrape_yahoo_news(ticker)
     sentiments = [analyze_sentiment(h) for h in headlines]
     average_sentiment = sum(sentiments) / len(sentiments) if sentiments else 0
@@ -59,7 +58,7 @@ def run_streamlit():
             res = requests.get("http://127.0.0.1:5000/analyze", params = {'ticker': ticker})
             data = res.json()
 
-            sentiment = data["average sentiment"]
+            sentiment = data["average_sentiment"]
             color = "🟢 Bullish" if sentiment > 0.1 else "🔴 Bearish" if sentiment < -0.1 else "🟡 Neutral"
 
             st.subheader(f"The Overall Sentiment for {data['ticker']}: {color}")
@@ -69,6 +68,14 @@ def run_streamlit():
             for title, score in zip(data['headlines'], data['individual_scores']):
                 st.write(f"**{title}** - Sentiment: {round(score, 2)}")
 
-
+'''
+Entrypoint
+'''
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
+        app.run(debug = True) 
+    else:
+        run_streamlit()
 
     
