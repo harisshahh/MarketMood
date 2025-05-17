@@ -1,6 +1,3 @@
-# MarketMood: A Real-Time Stock Sentiment Analyzer
-# By: Haris Shah
-
 import requests
 from bs4 import BeautifulSoup
 from textblob import TextBlob
@@ -12,29 +9,30 @@ def scrape_yahoo_news(ticker):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     headlines = []
-for tag in soup.find_all('h3'):
-    title = tag.get_text(strip = True)
-    if title and ticker.upper() in title.upper():
-        headlines.append(title)
-return headlines
+    
+    for tag in soup.find_all('h3'):
+        title = tag.get_text(strip = True)
+        if title and ticker.upper() in title.upper():
+            headlines.append(title)
+    return headlines
 
 def analyze_sentiment(text):
-    '''''
+    '''
     Using TextBlob to calculate the Sentiment Polarity
     The Range is from -1 to +1 
-    '''''
+    '''
     blob = TextBlob(text)
     return blob.sentiment.polarity
 
 app = Flask(__name__)
 
-@app.route('/analyze', methods = ["GET"])
+@app.route('/analyze', methods=["GET"])
 def analyze():
     '''
     Flask API route that takes a stock ticker, scrapes the news,
     analyzes the sentiment, and returns a score
     '''
-    ticket = requests.args.get('ticker')
+    ticker = request.args.get('ticker')  
     headlines = scrape_yahoo_news(ticker)
     sentiments = [analyze_sentiment(h) for h in headlines]
     average_sentiment = sum(sentiments) / len(sentiments) if sentiments else 0
@@ -74,8 +72,6 @@ Entrypoint
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
-        app.run(debug = True) 
+        app.run(debug = True)
     else:
         run_streamlit()
-
-    
