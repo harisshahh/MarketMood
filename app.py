@@ -4,6 +4,14 @@ from textblob import TextBlob
 from flask import Flask, jsonify, request
 import streamlit as st
 
+
+st.set_page_config (
+    page_title = "MarketMood: Stock Sentiment Analyzer",
+    page_icon = "📈",
+    layout = "wide",
+    initial_sidebar_state = "expanded"
+)
+
 def scrape_yahoo_news(ticker):
     url = f"https://finance.yahoo.com/quote/{ticker}?p={ticker}"
     response = requests.get(url)
